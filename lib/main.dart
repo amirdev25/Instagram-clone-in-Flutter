@@ -14,11 +14,12 @@ class InstagramApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      initialRoute: Constants.HOME,
+      debugShowCheckedModeBanner: false,
+      home: const HomePage(),
       routes: {
-        Constants.HOME: (context) => HomePage(),
-        Constants.PROFILE: (context) => ProfilePage(),
-        Constants.HOME: (context) => MessagesPage()
+        Constants.HOME: (context) => const HomePage(),
+        Constants.PROFILE: (context) => const ProfilePage(),
+        Constants.HOME: (context) => const MessagesPage()
       },
     );
   }
