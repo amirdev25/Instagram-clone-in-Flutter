@@ -284,13 +284,13 @@ class HomeBody extends StatelessWidget {
                             ]),
                     )),
                 child: Container(
-                    margin: const EdgeInsets.all(3.0),
+                    margin: const EdgeInsets.all(2.0),
                     child: CircleAvatar(
                       backgroundColor: Colors.white,
                       radius: 32.0,
                       child: CircleAvatar(
                         backgroundImage: NetworkImage(user.imgUrl),
-                        radius: 26.0,
+                        radius: 27.0,
                       ),
                     )),
               ),
