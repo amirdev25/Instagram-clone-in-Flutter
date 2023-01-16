@@ -1,11 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:instagram/utils/Constants.dart';
 
 import '../models/post_model.dart';
 import '../models/user_model.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+UserModel? owner;
+List<PostModel> postList = [];
+
+class _HomePageState extends State<HomePage> {
+  int currentIndex = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -13,17 +24,24 @@ class HomePage extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0.0,
-        title: SvgPicture.asset("assets/icons/instagram.svg"),
-        actions: const [
-          Icon(
-            Icons.add_circle_outline_outlined,
+        title: SvgPicture.asset(
+          "assets/icons/instagram.svg",
+          color: Colors.black,
+        ),
+        actions: [
+          SvgPicture.asset(
+            "assets/icons/add.svg",
             color: Colors.black,
+            height: 20.0,
+            width: 20.0,
           ),
           Padding(
-            padding: EdgeInsets.all(16.0),
-            child: Icon(
-              Icons.send,
+            padding: const EdgeInsets.all(16.0),
+            child: SvgPicture.asset(
+              "assets/icons/chat.svg",
               color: Colors.black,
+              height: 20.0,
+              width: 20.0,
             ),
           )
         ],
@@ -31,30 +49,61 @@ class HomePage extends StatelessWidget {
       body: HomeBody(),
       bottomNavigationBar: BottomNavigationBar(
         selectedItemColor: Colors.black,
-        currentIndex: 0,
+        currentIndex: currentIndex,
         unselectedItemColor: Colors.black45,
-        items: const [
+        selectedFontSize: 0.0,
+        showSelectedLabels: false,
+        items: [
           BottomNavigationBarItem(
-            icon: Icon(Icons.home_filled),
+            icon: SvgPicture.asset(
+              "assets/icons/home.svg",
+            ),
             label: "",
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.search),
+            icon: SvgPicture.asset(
+              "assets/icons/search.svg",
+            ),
             label: "",
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.video_collection_outlined),
+            icon: SvgPicture.asset(
+              "assets/icons/reels.svg",
+            ),
             label: "",
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.heart_broken_sharp),
+            icon: SvgPicture.asset(
+              "assets/icons/like.svg",
+            ),
             label: "",
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
+          const BottomNavigationBarItem(
+            icon: CircleAvatar(
+              backgroundImage: NetworkImage(
+                "https://images.unsplash.com/photo-1636041293723-abceb81bffbe?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MjN8fGF2YXRhciUyMDF4MXxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=500&q=60",
+              ),
+              radius: 14.0,
+            ),
             label: "",
           ),
         ],
+        onTap: (index) {
+          if (index == 4) {
+            Navigator.pushNamed(
+              context,
+              Constants.PROFILE,
+              arguments: {
+                Constants.OWNER: owner,
+                Constants.POSTS: postList,
+              },
+            );
+          } else {
+            setState(() {
+              currentIndex = index;
+            });
+          }
+        },
       ),
     );
   }
@@ -64,7 +113,6 @@ class HomeBody extends StatelessWidget {
   HomeBody({Key? key}) : super(key: key);
 
   List<UserModel> userList = [];
-  UserModel? owner;
   List<PostModel> postList = [];
 
   @override
@@ -72,45 +120,35 @@ class HomeBody extends StatelessWidget {
     loadData();
     return ListView(
       children: [
-        Expanded(
+        SizedBox(
+          height: 100.0,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: userList.length,
+            itemBuilder: (BuildContext context, int index) {
+              return index == 0
+                  ? getOwnerAccount()
+                  : getAccountWidget(
+                      userList[index - 1],
+                    );
+            },
+          ),
+        ),
+        const SizedBox(
+          height: 4.0,
+        ),
+        const Divider(
+          height: 1.0,
+          color: Colors.grey,
+        ),
+        SingleChildScrollView(
           child: Column(
             children: [
-              SizedBox(
-                height: 100.0,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: userList.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    return index == 0
-                        ? getOwnerAccount()
-                        : getAccountWidget(
-                            userList[index - 1],
-                          );
-                  },
-                ),
-              ),
-              const SizedBox(
-                height: 4.0,
-              ),
-              const Divider(
-                height: 1.0,
-                color: Colors.grey,
-              ),
+              for (int i = 0; i < postList.length; i++)
+                getPostView(postList[i]),
             ],
           ),
-        ),
-        Expanded(
-          child: Container(
-            height: 540.0,
-            child: ListView.builder(
-              scrollDirection: Axis.vertical,
-              itemCount: postList.length,
-              itemBuilder: (context, index) {
-                return getPostView(postList[index]);
-              },
-            ),
-          ),
-        ),
+        )
       ],
     );
   }
@@ -246,7 +284,7 @@ class HomeBody extends StatelessWidget {
       userList[7],
     ));
     postList.add(PostModel(
-      "hhttps://images.unsplash.com/photo-1673786427492-960fc4a0c1b9?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHwzOHx8fGVufDB8fHx8&auto=format&fit=crop&w=500&q=60",
+      "https://images.unsplash.com/photo-1673809625354-36867021fea1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHwyfHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=500&q=60",
       "The stack is a widget in Flutter that contains a list of widgets and positions them on top of the other. In other words, the stack allows developers to overlap multiple widgets into a single screen and renders them from bottom to top. Hence, the first widget is the bottommost item, and the last widget is the topmost item",
       645,
       16,
@@ -457,35 +495,35 @@ class HomeBody extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Row(
-              children: const [
+              children: [
                 Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Icon(
-                    Icons.heart_broken,
-                    size: 24.0,
+                  padding: const EdgeInsets.all(8.0),
+                  child: SvgPicture.asset(
+                    "assets/icons/like.svg",
+                    color: Colors.black,
                   ),
                 ),
                 Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Icon(
-                    Icons.comment,
-                    size: 24.0,
+                  padding: const EdgeInsets.all(8.0),
+                  child: SvgPicture.asset(
+                    "assets/icons/comment.svg",
+                    color: Colors.black,
                   ),
                 ),
                 Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Icon(
-                    Icons.send,
-                    size: 24.0,
+                  padding: const EdgeInsets.all(8.0),
+                  child: SvgPicture.asset(
+                    "assets/icons/share.svg",
+                    color: Colors.black,
                   ),
                 ),
               ],
             ),
-            const Padding(
-              padding: EdgeInsets.all(8.0),
-              child: Icon(
-                Icons.bookmark_border_outlined,
-                size: 32.0,
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: SvgPicture.asset(
+                "assets/icons/bookmark.svg",
+                color: Colors.black,
               ),
             )
           ],
