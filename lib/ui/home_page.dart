@@ -13,12 +13,7 @@ class HomePage extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0.0,
-        title: const Text(
-          "Instagram",
-          style: TextStyle(
-            color: Colors.black,
-          ),
-        ),
+        title: SvgPicture.asset("assets/icons/instagram.svg"),
         actions: const [
           Icon(
             Icons.add_circle_outline_outlined,
@@ -77,36 +72,45 @@ class HomeBody extends StatelessWidget {
     loadData();
     return ListView(
       children: [
-        SizedBox(
-          height: 100.0,
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            itemCount: userList.length,
-            itemBuilder: (BuildContext context, int index) {
-              return index == 0
-                  ? getOwnerAccount()
-                  : getAccountWidget(
-                      userList[index - 1],
-                    );
-            },
+        Expanded(
+          child: Column(
+            children: [
+              SizedBox(
+                height: 100.0,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: userList.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return index == 0
+                        ? getOwnerAccount()
+                        : getAccountWidget(
+                            userList[index - 1],
+                          );
+                  },
+                ),
+              ),
+              const SizedBox(
+                height: 4.0,
+              ),
+              const Divider(
+                height: 1.0,
+                color: Colors.grey,
+              ),
+            ],
           ),
         ),
-        const SizedBox(
-          height: 4.0,
-        ),
-        const Divider(
-          height: 1.0,
-          color: Colors.grey,
-        ),
-        SizedBox(
-          width: double.infinity,
-          child: ListView.builder(
-            itemCount: postList.length,
-            itemBuilder: (context, index) {
-              return getPostView(postList[index]);
-            },
+        Expanded(
+          child: Container(
+            height: 540.0,
+            child: ListView.builder(
+              scrollDirection: Axis.vertical,
+              itemCount: postList.length,
+              itemBuilder: (context, index) {
+                return getPostView(postList[index]);
+              },
+            ),
           ),
-        )
+        ),
       ],
     );
   }
