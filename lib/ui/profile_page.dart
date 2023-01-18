@@ -353,7 +353,6 @@ class ProfileBody extends StatelessWidget {
                     child: TabBarView(
                       children: [
                         GridView.count(
-                          shrinkWrap: true,
                           crossAxisCount: 3,
                           crossAxisSpacing: 2.0,
                           mainAxisSpacing: 2.0,
