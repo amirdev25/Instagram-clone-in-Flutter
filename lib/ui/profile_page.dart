@@ -1,23 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:instagram/models/post_model.dart';
-import 'package:instagram/models/user_model.dart';
-import 'package:instagram/ui/home_page.dart';
-import 'package:instagram/utils/Constants.dart';
+import 'package:instagram/data/LocalData.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final args =
-    ModalRoute
-        .of(context)!
-        .settings
-        .arguments as CustomClass;
-
-    UserModel? owner = args.owner as UserModel?;
-    List<PostModel> postList = args.postList as List<PostModel>;
+    LocalData data = LocalData();
 
     return Scaffold(
       appBar: AppBar(
@@ -25,7 +15,7 @@ class ProfilePage extends StatelessWidget {
         elevation: 0.0,
         backgroundColor: Colors.white,
         title: Text(
-          owner!.userName,
+          data.owner!.userName,
           style: const TextStyle(
             color: Colors.black,
           ),
@@ -41,18 +31,14 @@ class ProfilePage extends StatelessWidget {
           )
         ],
       ),
-      body:
-      const
-      ProfileBody
-        (
-      )
-      ,
+      body: ProfileBody(),
     );
   }
 }
 
 class ProfileBody extends StatelessWidget {
-  const ProfileBody({Key? key}) : super(key: key);
+  ProfileBody({Key? key}) : super(key: key);
+  LocalData data = LocalData();
 
   @override
   Widget build(BuildContext context) {
@@ -74,7 +60,7 @@ class ProfileBody extends StatelessWidget {
                     backgroundColor: Colors.white,
                     radius: 37.0,
                     child: CircleAvatar(
-                      backgroundImage: NetworkImage(owner!.imgUrl),
+                      backgroundImage: NetworkImage(data.owner!.imgUrl),
                       radius: 34.0,
                     ),
                   ),
@@ -144,7 +130,7 @@ class ProfileBody extends StatelessWidget {
             Container(
               alignment: Alignment.topLeft,
               child: Text(
-                owner!.name,
+                data.owner!.name,
                 style: const TextStyle(
                   color: Colors.black,
                   fontWeight: FontWeight.w500,
@@ -362,17 +348,24 @@ class ProfileBody extends StatelessWidget {
                       ),
                     ],
                   ),
-                  TabBarView(
-                    children: [
-                      GridView.count(
-                        crossAxisCount: 8,
-                        // children: [
-                        //   for(int i = 0)
-                        // ],
-                      ),
-                      Container(),
-                      Container(),
-                    ],
+                  SizedBox(
+                    height: 600.0,
+                    child: TabBarView(
+                      children: [
+                        GridView.count(
+                          shrinkWrap: true,
+                          crossAxisCount: 3,
+                          crossAxisSpacing: 2.0,
+                          mainAxisSpacing: 2.0,
+                          children: [
+                            for (int i = 0; i < data.postList.length; i++)
+                              getPostItems(i),
+                          ],
+                        ),
+                        Container(),
+                        Container(),
+                      ],
+                    ),
                   )
                 ],
               ),
@@ -398,6 +391,13 @@ class ProfileBody extends StatelessWidget {
           fontWeight: FontWeight.bold,
         ),
       ),
+    );
+  }
+
+  Widget getPostItems(int i) {
+    return Image.network(
+      data.postList[i].imgUrl,
+      fit: BoxFit.cover,
     );
   }
 }
